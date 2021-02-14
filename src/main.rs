@@ -1,119 +1,16 @@
-use serde::Deserialize;
 use std::{fs, path::Path};
 use tree_sitter_highlight::HighlightConfiguration;
 
-use crate::sublime_colors::SublimeColorScheme;
 use macros::define_langs;
 
 mod custom_colors;
+mod stylesheet;
 mod sublime_colors;
+mod svg_renderer;
 
-define_langs! { rust, javascript }
-
-#[derive(Debug, Deserialize)]
-#[serde(untagged)]
-enum ThemeItem {
-    JustColor(i32),
-    Advanced {
-        color: Option<i32>,
-        bold: Option<bool>,
-        underline: Option<bool>,
-        italic: Option<bool>,
-    },
-}
-
-#[derive(Debug, Deserialize)]
-struct ColorDef {
-    colorId: i32,
-    hexString: String,
-    name: String,
-}
+define_langs! {}
 
 fn main() {}
-
-pub trait Stylesheet {
-    fn build_stylesheet(&self) -> String;
-}
-
-// TODO: make better theme
-fn make_stylesheet() -> String {
-    let raw = fs::read_to_string("ayu-mirage.sublime-color-scheme").unwrap();
-    // let raw = fs::read_to_string("ayu-dark.sublime-color-scheme").unwrap();
-    let cl_scheme = SublimeColorScheme::parse(&raw).unwrap();
-    cl_scheme.build_stylesheet()
-    // let default_theme_str = r#"
-    //         {
-    //           "attribute": {"color": 124, "italic": true},
-    //           "comment": {"color": 245, "italic": true},
-    //           "constant.builtin": {"color": 94, "bold": true},
-    //           "constant": 94,
-    //           "constructor": 136,
-    //           "function.builtin": {"color": 26, "bold": true},
-    //           "function.method": 33,
-    //           "function": 26,
-    //           "keyword": 56,
-    //           "number": {"color": 94, "bold": true},
-    //           "property": 124,
-    //           "operator": {"color": 239, "bold": true},
-    //           "punctuation.bracket": 239,
-    //           "punctuation.delimiter": 239,
-    //           "string.special": 30,
-    //           "string": 28,
-    //           "tag": 18,
-    //           "type": 23,
-    //           "type.builtin": {"color": 23, "bold": true},
-    //           "variable.builtin": {"bold": true},
-    //           "variable.parameter": {"underline": true}
-    //         }
-    //     "#;
-
-    // let default_theme: HashMap<String, ThemeItem> =
-    //     serde_json::from_str(default_theme_str).unwrap();
-
-    // let color_map: HashMap<i32, String> =
-    //     serde_json::from_str::<Vec<ColorDef>>(
-    //         &fs::read_to_string("./term_colors.json").unwrap(),
-    //     )
-    //     .unwrap()
-    //     .iter()
-    //     .fold(HashMap::new(), |mut acc, item| {
-    //         acc.insert(item.colorId, item.hexString.clone());
-    //         acc
-    //     });
-
-    // let styles = default_theme.values().map(|v| match v {
-    //     ThemeItem::JustColor(code) => {
-    //         format!("color:{};", color_map[code])
-    //     }
-    //     ThemeItem::Advanced {
-    //         color,
-    //         bold,
-    //         italic,
-    //         underline,
-    //     } => {
-    //         let mut css = String::new();
-    //         if let Some(code) = color {
-    //             css.push_str(&format!("color:{};", color_map[code]));
-    //         }
-    //         if bold.unwrap_or(false) {
-    //             css.push_str("font-weight:bold;");
-    //         }
-    //         if italic.unwrap_or(false) {
-    //             css.push_str("font-style:italic;");
-    //         }
-    //         if underline.unwrap_or(false) {
-    //             css.push_str("text-decoration:underline;");
-    //         }
-    //         css
-    //     }
-    // });
-    // default_theme
-    //     .keys()
-    //     .zip(styles)
-    //     .map(|(class, style)| format!(".{} {{{}}}", class, style))
-    //     .collect::<Vec<_>>()
-    //     .join("\n")
-}
 
 fn create_highlight_configuration(
     language: &str,
@@ -139,11 +36,21 @@ fn create_highlight_configuration(
 
 #[cfg(test)]
 mod tests {
-    #[test]
-    fn test_parser() {
-        use crate::*;
-        use tree_sitter::Parser;
+    use std::{
+        fs,
+        path::{Path, PathBuf},
+    };
+    use tiny_skia::Pixmap;
+    use tree_sitter::Parser;
+    use tree_sitter_highlight::{Highlight, Highlighter, HtmlRenderer};
+    use usvg::{FitTo, Options, Tree};
 
+    use crate::{
+        create_highlight_configuration, get_language, svg_renderer::SvgRenderer,
+    };
+
+    #[test]
+    fn parser() {
         let language = get_language("javascript").unwrap();
         let mut parser = Parser::new();
         parser.set_language(language).unwrap();
@@ -153,21 +60,38 @@ mod tests {
     }
 
     #[test]
-    fn test_highlighter() {
-        use crate::*;
-        use tree_sitter_highlight::{Highlight, Highlighter, HtmlRenderer};
-
-        let source = fs::read_to_string("macros/src/lib.rs").unwrap();
-        let mut cfg = create_highlight_configuration("rust").unwrap();
+    fn highlighter() {
+        // let source = fs::read_to_string("macros/src/lib.rs").unwrap();
+        let source = r#"
+abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz00
+        "#
+        .trim();
+        // function add(a) {
+        //     return b => a + b;
+        // }
+        // console.log(add(2)(42));
+        // console.log(add(2)(42));console.log(add(2)(42));console.log(add(2)(42));console.log(add(2)(42));
+        // class Foo {
+        //     constructor() {
+        //         const o = { bruh: 123 };
+        //     }
+        // }
+        // let source = fs::read_to_string(
+        //     "/home/kraftwerk28/projects/js/blcklstbot/ioredis-test.js",
+        // )
+        // .unwrap();
+        let language = "javascript";
+        let mut cfg = create_highlight_configuration(language).unwrap();
         let mut highlighter = Highlighter::new();
-        let mut html_renderer = HtmlRenderer::new();
+        // let mut html_renderer = HtmlRenderer::new();
+        let mut svg_renderer = SvgRenderer::new();
 
         let names = cfg.names().to_vec();
         println!("{}", names.join("\n"));
 
         let attrs: Vec<_> = names
             .iter()
-            .map(|name| format!("class=\"{}\"", name.replace(".", "-")))
+            .map(|name| format!("class=\"{}\"", name.replace(".", " ")))
             .collect();
         cfg.configure(&names.to_vec());
 
@@ -175,33 +99,61 @@ mod tests {
             .highlight(&cfg, source.as_bytes(), None, |_| None)
             .unwrap();
 
-        let attr_cb = |hl: Highlight| -> &[u8] { attrs[hl.0].as_bytes() };
+        // let attr_cb = |hl: Highlight| -> &[u8] { attrs[hl.0].as_bytes() };
+        let attr_cb = |hl: Highlight| attrs[hl.0].clone();
 
-        html_renderer
-            .render(events, source.as_bytes(), &attr_cb)
+        // html_renderer
+        //     .render(events, source.as_bytes(), &attr_cb)
+        //     .unwrap();
+
+        let stylesheet = fs::read_to_string("atom_ayu_dark.css").unwrap();
+        svg_renderer
+            .render(&source, events, &attr_cb, stylesheet)
             .unwrap();
 
         println!(
-            "GENERATED HTML:\n{}",
-            String::from_utf8_lossy(&html_renderer.html)
+            "GENERATED SVG:\n{}",
+            svg_renderer.svg(),
+            // String::from_utf8_lossy(&html_renderer.html)
         );
+        fs::write(PathBuf::from("result.svg"), svg_renderer.svg()).unwrap();
 
-        let prepared = format!(
-            "<style>{}</style><pre><code>{}</code></pre>",
-            make_stylesheet(),
-            String::from_utf8_lossy(&html_renderer.html)
-        );
-        fs::write("result.html", prepared.as_bytes()).unwrap();
+        // let styles: SimpleColors =
+        //     serde_json::from_str(&fs::read_to_string("ayu_dark.json").unwrap())
+        //         .unwrap();
+
+        // let prepared = format!(
+        //     "<style>{}</style><pre><code>{}</code></pre>",
+        //     styles,
+        //     // styles.build_stylesheet(),
+        //     String::from_utf8_lossy(&html_renderer.html)
+        // );
+        // let path_to_result = PathBuf::from("result.html");
+        // fs::write(&path_to_result, prepared.as_bytes()).unwrap();
     }
 
     #[test]
-    fn test_sublime_parsing() {
+    fn sublime_parsing() {
+        use crate::stylesheet::Stylesheet;
         use crate::sublime_colors::SublimeColorScheme;
-        use crate::Stylesheet;
         use std::fs;
 
         let raw = fs::read_to_string("ayu-dark.sublime-color-scheme").unwrap();
         let cl_scheme = SublimeColorScheme::parse(&raw).unwrap();
         println!("{}", &cl_scheme.build_stylesheet());
+    }
+
+    #[test]
+    fn resvg() {
+        let content = fs::read("result.svg").unwrap();
+
+        let mut tree_opts = Options::default();
+        tree_opts.fontdb.load_system_fonts();
+        tree_opts.fontdb.set_monospace_family("JetBrains Mono");
+
+        let tree = Tree::from_data(&content, &tree_opts).unwrap();
+        let mut pixmap = Pixmap::new(800, 200).unwrap();
+        resvg::render(&tree, FitTo::Original, pixmap.as_mut()).unwrap();
+        pixmap.save_png(Path::new("resvg_result.png")).unwrap();
     }
 }

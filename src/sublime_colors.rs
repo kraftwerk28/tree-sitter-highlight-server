@@ -3,7 +3,7 @@ use serde::{de, Deserialize, Deserializer};
 use std::collections::HashMap;
 use std::fmt;
 
-use crate::Stylesheet;
+use crate::stylesheet::Stylesheet;
 
 #[derive(Deserialize, Debug)]
 pub struct SublimeColorScheme {
@@ -35,13 +35,13 @@ struct FontStyle {
     underline: bool,
 }
 
-impl<'de> de::Deserialize<'de> for Scopes {
+impl<'a> de::Deserialize<'a> for Scopes {
     fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
     where
-        D: Deserializer<'de>,
+        D: Deserializer<'a>,
     {
         struct Vis;
-        impl<'de> Visitor<'de> for Vis {
+        impl<'b> Visitor<'b> for Vis {
             type Value = Scopes;
             fn expecting(&self, _f: &mut fmt::Formatter) -> fmt::Result {
                 unreachable!()
