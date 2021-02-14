@@ -110,7 +110,7 @@ impl SublimeColorScheme {
             .scope
             .0
             .iter()
-            .map(|selector| format!(".{}", selector))
+            .map(|selector| format!(".{}", selector.replace(".", "-")))
             // .map(|selector| {
             //     let sub_sel: Vec<_> = selector.split(".").collect();
             //     let len = sub_sel.len();

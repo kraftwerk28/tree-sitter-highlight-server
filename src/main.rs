@@ -1,15 +1,14 @@
 use serde::Deserialize;
-use std::fs;
-use tree_sitter::Language;
+use std::{fs, path::Path};
+use tree_sitter_highlight::HighlightConfiguration;
 
 use crate::sublime_colors::SublimeColorScheme;
+use macros::define_langs;
 
+mod custom_colors;
 mod sublime_colors;
 
-extern "C" {
-    fn tree_sitter_javascript() -> Language;
-    fn tree_sitter_rust() -> Language;
-}
+define_langs! { rust, javascript }
 
 #[derive(Debug, Deserialize)]
 #[serde(untagged)]
@@ -116,6 +115,28 @@ fn make_stylesheet() -> String {
     //     .join("\n")
 }
 
+fn create_highlight_configuration(
+    language: &str,
+) -> Option<HighlightConfiguration> {
+    let raw_dir = format!("parsers/tree-sitter-{}/queries", language);
+    let queries_dir = Path::new(&raw_dir).canonicalize().ok()?;
+    let highlights = queries_dir.join("highlights.scm");
+    let injections = queries_dir.join("injections.scm");
+    let locals = queries_dir.join("locals.scm");
+    if !highlights.exists() {
+        return None;
+    }
+    let cfg = HighlightConfiguration::new(
+        get_language(language)?,
+        &fs::read_to_string(highlights).ok()?,
+        &fs::read_to_string(injections).unwrap_or(String::new()),
+        &fs::read_to_string(locals).unwrap_or(String::new()),
+    )
+    .ok()?;
+
+    Some(cfg)
+}
+
 #[cfg(test)]
 mod tests {
     #[test]
@@ -123,7 +144,7 @@ mod tests {
         use crate::*;
         use tree_sitter::Parser;
 
-        let language = unsafe { tree_sitter_javascript() };
+        let language = get_language("javascript").unwrap();
         let mut parser = Parser::new();
         parser.set_language(language).unwrap();
         let source_code = "function add(a, b) { return a + b; }";
@@ -134,49 +155,10 @@ mod tests {
     #[test]
     fn test_highlighter() {
         use crate::*;
-        use std::fs::{self, read_to_string};
-        use tree_sitter_highlight::{
-            Highlight, HighlightConfiguration, Highlighter, HtmlRenderer,
-        };
+        use tree_sitter_highlight::{Highlight, Highlighter, HtmlRenderer};
 
-        // let language = unsafe { tree_sitter_javascript() };
-        let language = unsafe { tree_sitter_rust() };
-
-        // let source =
-        //     "function add(a, b) {\n  return a + b;\n}\n\nconst foo = () => 42;\n\nclass Foo {}";
-        let source = fs::read_to_string("src/main.rs").unwrap();
-
-        // Javascript
-        // let mut cfg = HighlightConfiguration::new(
-        //     language,
-        //     &read_to_string(
-        //         "./parsers/tree-sitter-javascript/queries/highlights.scm",
-        //     )
-        //     .unwrap(),
-        //     &read_to_string(
-        //         "./parsers/tree-sitter-javascript/queries/injections.scm",
-        //     )
-        //     .unwrap(),
-        //     &read_to_string(
-        //         "./parsers/tree-sitter-javascript/queries/locals.scm",
-        //     )
-        //     .unwrap(),
-        // )
-        // .unwrap();
-
-        let mut cfg = HighlightConfiguration::new(
-            language,
-            &read_to_string(
-                "./parsers/tree-sitter-rust/queries/highlights.scm",
-            )
-            .unwrap(),
-            &read_to_string(
-                "./parsers/tree-sitter-rust/queries/injections.scm",
-            )
-            .unwrap(),
-            "",
-        )
-        .unwrap();
+        let source = fs::read_to_string("macros/src/lib.rs").unwrap();
+        let mut cfg = create_highlight_configuration("rust").unwrap();
         let mut highlighter = Highlighter::new();
         let mut html_renderer = HtmlRenderer::new();
 

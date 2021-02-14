@@ -11,7 +11,8 @@ fn build_language_parser(language: &str) {
     let mut builder = cc::Build::new();
     builder
         .include(parser_dir)
-        .file(parser_file.canonicalize().unwrap());
+        .file(parser_file.canonicalize().unwrap())
+        .flag("-Wno-unused");
     if scanner_file.exists() {
         builder.file(scanner_file.canonicalize().unwrap());
     }
