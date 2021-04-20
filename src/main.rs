@@ -1,14 +1,24 @@
 use std::{fs, path::Path};
 use tree_sitter_highlight::HighlightConfiguration;
 
-use macros::define_langs;
-
 mod custom_colors;
 mod stylesheet;
 mod sublime_colors;
 mod svg_renderer;
 
-define_langs! {}
+include!(concat!(env!("OUT_DIR"), "/tree_sitter_fns.rs"));
+
+pub fn get_language(
+    language: &str,
+) -> ::std::option::Option<::tree_sitter::Language> {
+    __LANG_LIST.iter().find_map(|(name, func)| {
+        if name == &language {
+            Some(unsafe { func() })
+        } else {
+            None
+        }
+    })
+}
 
 fn main() {}
 
@@ -25,7 +35,7 @@ fn create_highlight_configuration(
     }
     let cfg = HighlightConfiguration::new(
         get_language(language)?,
-        &fs::read_to_string(highlights).ok()?,
+        &fs::read_to_string(highlights).expect("has highlights .scm file"),
         &fs::read_to_string(injections).unwrap_or(String::new()),
         &fs::read_to_string(locals).unwrap_or(String::new()),
     )
@@ -42,11 +52,12 @@ mod tests {
     };
     use tiny_skia::Pixmap;
     use tree_sitter::Parser;
-    use tree_sitter_highlight::{Highlight, Highlighter, HtmlRenderer};
+    use tree_sitter_highlight::{Highlight, Highlighter};
     use usvg::{FitTo, Options, Tree};
 
     use crate::{
-        create_highlight_configuration, get_language, svg_renderer::SvgRenderer,
+        create_highlight_configuration, get_language, stylesheet::Stylesheet,
+        sublime_colors::SublimeColorScheme, svg_renderer::SvgRenderer,
     };
 
     #[test]
@@ -134,10 +145,6 @@ abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz00
 
     #[test]
     fn sublime_parsing() {
-        use crate::stylesheet::Stylesheet;
-        use crate::sublime_colors::SublimeColorScheme;
-        use std::fs;
-
         let raw = fs::read_to_string("ayu-dark.sublime-color-scheme").unwrap();
         let cl_scheme = SublimeColorScheme::parse(&raw).unwrap();
         println!("{}", &cl_scheme.build_stylesheet());
@@ -145,15 +152,19 @@ abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz00
 
     #[test]
     fn resvg() {
-        let content = fs::read("result.svg").unwrap();
+        let file_name = Path::new("sample.svg");
+        let result_name =
+            file_name.file_stem().unwrap().to_string_lossy() + ".png";
+        println!("{:?} {:?}", file_name, result_name);
+        let svg_content = fs::read(file_name).unwrap();
 
         let mut tree_opts = Options::default();
         tree_opts.fontdb.load_system_fonts();
         tree_opts.fontdb.set_monospace_family("JetBrains Mono");
 
-        let tree = Tree::from_data(&content, &tree_opts).unwrap();
+        let tree = Tree::from_data(&svg_content, &tree_opts).unwrap();
         let mut pixmap = Pixmap::new(800, 200).unwrap();
         resvg::render(&tree, FitTo::Original, pixmap.as_mut()).unwrap();
-        pixmap.save_png(Path::new("resvg_result.png")).unwrap();
+        pixmap.save_png(result_name.as_ref()).unwrap();
     }
 }
