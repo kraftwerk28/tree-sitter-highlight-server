@@ -5,13 +5,13 @@ use std::{
 };
 
 fn build_language_parser(grammar_path: PathBuf) -> io::Result<()> {
-    let parser_dir = grammar_path.join("src");
-    let parser_file = parser_dir.join("parser.c");
-    let scanner_file = parser_dir.join("scanner.c");
+    let src_dir = grammar_path.join("src");
+    let parser_file = src_dir.join("parser.c");
+    let scanner_file = src_dir.join("scanner.c");
 
     let mut builder = cc::Build::new();
     builder
-        .include(parser_dir)
+        .include(src_dir)
         .flag("-Wno-unused")
         .file(parser_file.canonicalize()?);
 
@@ -24,6 +24,8 @@ fn build_language_parser(grammar_path: PathBuf) -> io::Result<()> {
 
 fn main() -> io::Result<()> {
     println!("cargo:rerun-if-changed=build.rs");
+    build_language_parser(PathBuf::from("parsers/tree-sitter-javascript"))?;
+    return Ok(());
 
     let paths: Vec<_> = PathBuf::from("parsers")
         .read_dir()

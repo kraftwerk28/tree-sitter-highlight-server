@@ -320,9 +320,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.5.2"
+version = "1.7.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "13bd41f508810a131401606d54ac32a467c97172d74ba7662562ebba5ad07fa0"
+checksum = "af8b08b04175473088b46763e51ee54da5f9a164bc162f615b91bc179dbf15a3"
 
 [[package]]
 name = "pico-args"
@@ -608,39 +608,84 @@ dependencies = [
 
 [[package]]
 name = "tree-sitter"
-version = "0.17.1"
+version = "0.19.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d18dcb776d3affaba6db04d11d645946d34a69b3172e588af96ce9fecd20faac"
+checksum = "1f41201fed3db3b520405a9c01c61773a250d4c3f43e9861c14b2bb232c981ab"
 dependencies = [
  "cc",
  "regex",
 ]
 
 [[package]]
-name = "tree-sitter-bot"
+name = "tree-sitter-cpp"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "c7bd90c7b7db59369ed00fbc40458d9c9b2b8ed145640e337e839ac07aa63e15"
+dependencies = [
+ "cc",
+ "tree-sitter",
+]
+
+[[package]]
+name = "tree-sitter-highlight"
+version = "0.19.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "fb37284ab259e42af1e49fa0f302e3fa93400f2f3921dcfd342b1c833db45970"
+dependencies = [
+ "regex",
+ "tree-sitter",
+]
+
+[[package]]
+name = "tree-sitter-highlight-server"
 version = "0.1.0"
 dependencies = [
  "cc",
  "futures",
  "htmlescape",
  "macros",
+ "once_cell",
  "resvg",
  "serde",
  "serde_json",
  "tiny-skia",
  "tokio",
  "tree-sitter",
+ "tree-sitter-cpp",
  "tree-sitter-highlight",
+ "tree-sitter-javascript",
+ "tree-sitter-python",
+ "tree-sitter-rust",
  "usvg",
 ]
 
 [[package]]
-name = "tree-sitter-highlight"
-version = "0.3.0"
+name = "tree-sitter-javascript"
+version = "0.19.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "856e1c23cdd0ee2a2d7f1c7d5ad2531911a71b907eca0f51629ca5feaaf735d1"
+checksum = "840bb4d5f3c384cb76b976ff07297f5a24b6e61a708baa4464f53e395caaa5f9"
 dependencies = [
- "regex",
+ "cc",
+ "tree-sitter",
+]
+
+[[package]]
+name = "tree-sitter-python"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5646bfe71c4eb1c21b714ce0c38334c311eab767095582859e85da6281e9fd6c"
+dependencies = [
+ "cc",
+ "tree-sitter",
+]
+
+[[package]]
+name = "tree-sitter-rust"
+version = "0.19.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "784f7ef9cdbd4c895dc2d4bb785e95b4a5364a602eec803681db83d1927ddf15"
+dependencies = [
+ "cc",
  "tree-sitter",
 ]
 
