@@ -1,13 +1,12 @@
-use std::{
-    env, fs,
-    io::{self, Write},
-    path::PathBuf,
-};
+use std::{io, path::PathBuf};
 
 fn build_language_parser(grammar_path: PathBuf) -> io::Result<()> {
     let src_dir = grammar_path.join("src");
     let parser_file = src_dir.join("parser.c");
-    let scanner_file = src_dir.join("scanner.c");
+    let mut scanner_file = src_dir.join("scanner.c");
+    if !scanner_file.exists() {
+        scanner_file = src_dir.join("scanner.cc");
+    }
 
     let mut builder = cc::Build::new();
     builder
@@ -24,57 +23,7 @@ fn build_language_parser(grammar_path: PathBuf) -> io::Result<()> {
 
 fn main() -> io::Result<()> {
     println!("cargo:rerun-if-changed=build.rs");
-    build_language_parser(PathBuf::from("parsers/tree-sitter-javascript"))?;
-    return Ok(());
-
-    let paths: Vec<_> = PathBuf::from("parsers")
-        .read_dir()
-        .expect("`parsers/` directory exists")
-        .filter_map(Result::ok)
-        .map(|it| it.path())
-        .collect();
-
-    let mut externs_file =
-        fs::OpenOptions::new().write(true).create(true).open(
-            PathBuf::from(env::var("OUT_DIR").unwrap())
-                .join("tree_sitter_fns.rs"),
-        )?;
-
-    let languages: Vec<String> = paths
-        .iter()
-        .filter_map(|p| {
-            Some(
-                p.file_name()?
-                    .to_str()?
-                    .strip_prefix("tree-sitter-")?
-                    .to_string(),
-            )
-        })
-        .collect();
-
-    externs_file.write(
-        b"type P = (&'static str, unsafe extern \"C\" fn() -> ::tree_sitter::Language);\n
-extern \"C\" {\n",
-    )?;
-
-    for (path, lang) in paths.iter().zip(languages.clone()) {
-        build_language_parser(path.clone())?;
-        externs_file.write(
-            format!(
-                "    fn tree_sitter_{}() -> ::tree_sitter::Language;\n",
-                lang,
-            )
-            .as_bytes(),
-        )?;
-    }
-
-    externs_file.write(b"}\n\n")?;
-    externs_file.write(b"const __LANG_LIST: &[P] = &[\n")?;
-    for lang in languages {
-        externs_file.write(
-            format!("    (\"{0}\", tree_sitter_{0}),\n", lang).as_bytes(),
-        )?;
-    }
-    externs_file.write(b"];\n")?;
+    build_language_parser(PathBuf::from("parsers/tree-sitter-c"))?;
+    build_language_parser(PathBuf::from("parsers/tree-sitter-haskell"))?;
     Ok(())
 }

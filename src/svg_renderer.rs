@@ -82,7 +82,8 @@ where
     fn new_text(&mut self) {
         self.current_line += 1;
         self.svg += &format!(
-            r#"<text y="{line}em" class="meta separator">{line}</text><text x="36" y="{line}em" xml:space="preserve">"#,
+            r#"<text y="{line}em" class="meta separator" xml:space="preserve">{:>3} </text><text x="48" y="{line}em" xml:space="preserve">"#,
+            self.current_line,
             line = self.current_line,
         );
     }
@@ -130,8 +131,10 @@ where
     pub fn get_picture_size(&self) -> (usize, usize) {
         let lines = self.source.split("\n");
         // Considering line numbers
+        let numbers_column_width = 4;
         let max_line_width =
-            lines.clone().map(|line| line.len()).max().unwrap() + 3;
+            lines.clone().map(|line| line.len()).max().unwrap()
+                + numbers_column_width;
         let font_size = 20;
         (
             font_size / 5 * 3 * max_line_width,

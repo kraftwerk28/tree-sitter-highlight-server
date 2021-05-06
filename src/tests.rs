@@ -13,46 +13,63 @@ use crate::{
 
 #[test]
 fn parser() {
-    let config = get_language("rust").expect("Language parser exists");
+    let config = get_language("cpp").expect("Language parser exists");
     let mut parser = Parser::new();
-    parser.set_language(config.language).expect("Set language");
-    let source_code = r#"
-function add(a, b) {
-    return a + b;
-}
-    "#
-    .trim();
+    parser
+        .set_language(config.language)
+        .expect("Language setted");
+    let source_code = fs::read_to_string("sample.cpp").unwrap();
     let tree = parser.parse(source_code, None).unwrap();
     println!("{}", tree.root_node().to_sexp());
 }
 
-const NAMES_FROM_README: [&str; 18] = [
-    "attribute",
-    "constant",
-    "function.builtin",
-    "function",
+const NAMES_FROM_README: &[&str] = &[
+    // "attribute",
+    // "constant",
+    // "function.builtin",
+    // "function",
+    // "keyword",
+    // "operator",
+    // "property",
+    // "punctuation",
+    // "punctuation.bracket",
+    // "punctuation.delimiter",
+    // "string",
+    // "string.special",
+    // "tag",
+    // "type",
+    // "type.builtin",
+    // "variable",
+    // "variable.builtin",
+    // "variable.parameter",
     "keyword",
-    "operator",
-    "property",
-    "punctuation",
-    "punctuation.bracket",
-    "punctuation.delimiter",
-    "string",
-    "string.special",
-    "tag",
-    "type",
-    "type.builtin",
-    "variable",
-    "variable.builtin",
-    "variable.parameter",
+    "function_definition",
+    "function_declarator",
+    "declarator",
+    "identifier",
+    "parameters",
+    "parameter_list",
+    "compound_statement",
+    "expression_statement",
+    "binary_expression",
+    "binary_expression",
+    "scoped_identifier",
+    "namespace",
+    "namespace_identifier",
+    "string_literal",
+    "namespace_identifier",
+    "return_statement",
+    "number_literal",
 ];
 
 #[test]
 fn highlight() {
-    let source_code = fs::read_to_string("sample.js")
-        .unwrap()
-        .replace('\t', "    ");
-    let language_name = "javascript";
+    let source_code = fs::read_to_string(
+        "/home/kraftwerk28/projects/haskell/playground/ShuntingYard.hs",
+    )
+    .unwrap()
+    .replace('\t', "    ");
+    let language_name = "haskell";
 
     let mut hl_cfg = {
         let cfg = get_language(language_name).unwrap();
@@ -90,7 +107,8 @@ fn highlight() {
     let mut svg_renderer =
         SvgRenderer::new(source_code.clone(), &attribute_callback);
 
-    let stylesheet = fs::read_to_string("ayu-vim.css").unwrap();
+    let stylesheet =
+        fs::read_to_string("assets/stylesheets/ayu-vim.css").unwrap();
     svg_renderer.render(events, stylesheet).unwrap();
 
     let svg_path = Path::new("sample.svg");
@@ -128,17 +146,6 @@ fn sublime_parsing() {
     let cl_scheme = SublimeColorScheme::parse(&raw).unwrap();
     println!("{}", &cl_scheme.build_stylesheet());
 }
-
-const USVG_TREE_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
-    let mut tree_opts = Options::default();
-    tree_opts
-        .fontdb
-        .load_font_file("assets/JetBrainsMono-Regular.ttf")
-        .unwrap();
-    // tree_opts.fontdb.load_system_fonts();
-    tree_opts.fontdb.set_monospace_family("JetBrains Mono");
-    tree_opts
-});
 
 #[test]
 fn resvg() {

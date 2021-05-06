@@ -10,12 +10,6 @@ pub struct LanguageConfig {
     pub locals_query: String,
 }
 
-extern "C" {
-    // extern functions for parsers/ directory
-    fn tree_sitter_javascript() -> Language;
-    // fn tree_sitter_cpp() -> Language;
-}
-
 impl LanguageConfig {}
 
 macro_rules! crates_io_language {
@@ -77,20 +71,32 @@ macro_rules! submodule_language {
     };
 }
 
+pub const USVG_TREE_OPTIONS: Lazy<usvg::Options> = Lazy::new(|| {
+    let mut tree_opts = usvg::Options::default();
+    tree_opts
+        .fontdb
+        .load_font_file("assets/fonts/JetBrainsMono-Regular.ttf")
+        .unwrap();
+    // tree_opts.fontdb.load_system_fonts();
+    tree_opts.fontdb.set_monospace_family("JetBrains Mono");
+    tree_opts
+});
+
 // include!(concat!(env!("OUT_DIR"), "/tree_sitter_fns.rs"));
+extern "C" {
+    // extern functions for parsers/ directory
+    fn tree_sitter_c() -> Language;
+    fn tree_sitter_haskell() -> Language;
+}
 
 pub fn get_language(name: &str) -> Option<Lazy<LanguageConfig>> {
     match name {
-        // "javascript" => Some(crates_io_language!(tree_sitter_javascript)),
-        "javascript" => Some(submodule_language!("javascript", tree_sitter_javascript)),
-        // "c" => Some(crates_io_language!(tree_sitter_c)),
+        "javascript" => Some(crates_io_language!(tree_sitter_javascript)),
+        "c" => Some(submodule_language!("c", tree_sitter_c)),
         "cpp" => Some(crates_io_language!(tree_sitter_cpp)),
-        // "cpp" => Some(submodule_language!("cpp", tree_sitter_cpp)),
-        // "typescript" => {
-        //     Some(submodule_language!("typescript", tree_sitter_typescript))
-        // }
         "rust" => Some(crates_io_language!(tree_sitter_rust)),
         "python" => Some(crates_io_language!(tree_sitter_python)),
+        "haskell" => Some(submodule_language!("haskell", tree_sitter_haskell)),
         _ => None,
     }
 }
