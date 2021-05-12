@@ -1,0 +1,357 @@
+.background {
+  fill: #0F1419;
+}
+
+.comment, .punctuation.definition.comment {
+  font-style: italic;
+  fill: #5C6773;
+}
+
+.variable {
+  fill: #BFBAB0;
+}
+
+.string, .constant.other.symbol {
+  fill: #C2D94C;
+}
+
+.constant.numeric {
+  fill: #F29718;
+}
+
+.string.regexp, .constant.character.escape {
+  fill: #95E6CB;
+}
+
+.constant.language {
+  fill: #F29718;
+}
+
+.constant.character, .constant.other {
+  fill: #F29718;
+}
+
+.variable.member {
+  fill: #ec5f67;
+}
+
+.keyword:not(.keyword.operator), .keyword.operator.word {
+  fill: #FF7733;
+}
+
+.keyword.operator {
+  fill: #F29668;
+}
+
+.punctuation.separator, .punctuation.terminator {
+  fill: rgba(191, 186, 176, 0.8);
+}
+
+.punctuation.section {
+  fill: #BFBAB0;
+}
+
+.punctuation.accessor {
+  fill: #F29668;
+}
+
+.punctuation.definition.annotation {
+  fill: rgba(191, 186, 176, 0.8);
+}
+
+.variable.other.dollar.only.js, .variable.other.object.dollar.only.js, .variable.type.dollar.only.js, .class.dollar.only.js {
+  fill: #E6B673;
+}
+
+.storage {
+  fill: #FF7733;
+}
+
+.storage.type {
+  fill: #FF7733;
+}
+
+.entity.name.function {
+  fill: #FFB454;
+}
+
+.entity.name:not(.entity.name.section, .entity.name.tag, .entity.name.label) {
+  fill: #59C2FF;
+}
+
+.entity.other.inherited-class {
+  text-decoration: underline;
+  fill: #59C2FF;
+}
+
+.variable.parameter {
+  fill: #F29718;
+}
+
+.variable.language {
+  font-style: italic;
+  fill: #39BAE6;
+}
+
+.entity.name.tag, .meta.tag.sgml {
+  fill: #39BAE6;
+}
+
+.punctuation.definition.tag.end, .punctuation.definition.tag.begin, .punctuation.definition.tag {
+  fill: rgba(57, 186, 230, 0.56);
+}
+
+.entity.other.attribute-name {
+  fill: #FFB454;
+}
+
+.variable.function, .variable.annotation {
+  fill: #FFB454;
+}
+
+.function, .macro {
+  fill: #F07178;
+}
+
+.constant {
+  font-style: italic;
+  fill: #F29668;
+}
+
+.type, .class {
+  font-style: italic;
+  fill: #39BAE6;
+}
+
+.invalid {
+  fill: #FF3333;
+}
+
+.invalid.deprecated {
+  fill: #FFFFFF;
+  background-color: #FF7733;
+}
+
+.meta.diff, .meta.diff.header {
+  fill: #c594c5;
+}
+
+.source.ruby .variable.other.readwrite {
+  fill: #FFB454;
+}
+
+.source.css .entity.name.tag, .source.sass .entity.name.tag, .source.scss .entity.name.tag, .source.less .entity.name.tag, .source.stylus .entity.name.tag {
+  fill: #59C2FF;
+}
+
+.source.css .type, .source.sass .type, .source.scss .type, .source.less .type, .source.stylus .type {
+  fill: #5C6773;
+}
+
+.type.property-name {
+  fill: #39BAE6;
+}
+
+.constant.numeric.line-number.find-in-files:not(.match) {
+  fill: #5C6773;
+}
+
+.constant.numeric.line-number.match {
+  fill: #FF7733;
+}
+
+.entity.name.filename.find-in-files {
+  fill: #C2D94C;
+}
+
+.message.error {
+  fill: #FF3333;
+}
+
+.source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta .meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta .meta.structure.dictionary.json .string.quoted.double.json:not(.meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta .meta.structure.dictionary.json .punctuation.definition.string:not(.meta .meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.source.json .meta.structure.dictionary.json .string.quoted.double.json:not(.meta.structure.dictionary.json .meta.structure.dictionary.value.json .string.quoted.double.json), .source.json .meta.structure.dictionary.json .punctuation.definition.string:not(.meta.structure.dictionary.json .meta.structure.dictionary.value.json .punctuation.definition.string) {
+  fill: #39BAE6;
+}
+
+.markup.heading {
+  font-weight: bold;
+  fill: #FF7733;
+}
+
+.string.other.link, .markup.underline.link {
+  font-style: italic;
+  text-decoration: underline;
+  fill: #95E6CB;
+}
+
+.punctuation.definition.image {
+  fill: #FFB454;
+}
+
+.markup.italic {
+  font-style: italic;
+  fill: #F07178;
+}
+
+.markup.bold {
+  font-weight: bold;
+  fill: #F07178;
+}
+
+.markup.italic .markup.bold, .markup.bold .markup.italic {
+  font-weight: bold;
+  font-style: italic;
+}
+
+.markup.raw {
+  background-color: rgba(191, 186, 176, 0.03);
+}
+
+.markup.raw.inline {
+  background-color: rgba(191, 186, 176, 0.06);
+}
+
+.meta.separator {
+  font-weight: bold;
+  fill: #5C6773;
+  background-color: rgba(191, 186, 176, 0.06);
+}
+
+.markup.quote {
+  font-style: italic;
+  fill: #F29718;
+}
+
+.markup.list.numbered.bullet, .markup.list .punctuation.definition.list_item {
+  fill: #95E6CB;
+}
+
+.markup.inserted {
+  fill: #C2D94C;
+}
+
+.markup.changed {
+  fill: #39BAE6;
+}
+
+.markup.deleted {
+  fill: #F07178;
+}
+
+.markup.strike {
+  fill: #E6B673;
+}
+
+.markup.table {
+  fill: #39BAE6;
+  background-color: rgba(191, 186, 176, 0.06);
+}
+
+.text.html.markdown .markup.raw.inline {
+  fill: #F29668;
+}
+
+.text.html.markdown .meta.dummy.line-break {
+  fill: #5C6773;
+}
+
+.markup.raw.block.fenced.markdown {
+  fill: #BFBAB0;
+  background-color: rgba(191, 186, 176, 0.06);
+}
+
+.punctuation.definition.fenced.markdown, .variable.language.fenced.markdown {
+  fill: #5C6773;
+  background-color: rgba(191, 186, 176, 0.06);
+}
+
+.variable.language.fenced.markdown {
+  fill: #5C6773;
+}
+
+.markup.inserted.git_gutter {
+  fill: #C2D94C;
+}
+
+.markup.changed.git_gutter {
+  fill: #39BAE6;
+}
+
+.markup.deleted.git_gutter {
+  fill: #FF3333;
+}
+
+.markup.ignored.git_gutter {
+  fill: #20272C;
+}
+
+.markup.untracked.git_gutter {
+  fill: #20272C;
+}
+
+.gutter_color {
+  fill: #FFFFFF;
+}
+
+.acejump.label.blue {
+  fill: #FFFFFF;
+  background-color: #39BAE6;
+}
+
+.acejump.label.green {
+  fill: #FFFFFF;
+  background-color: #C2D94C;
+}
+
+.acejump.label.orange {
+  fill: #FFFFFF;
+  background-color: #FF7733;
+}
+
+.acejump.label.purple {
+  fill: #FFFFFF;
+  background-color: #F07178;
+}
+
+.sublimelinter.mark.warning {
+  fill: #39BAE6;
+}
+
+.sublimelinter.gutter-mark {
+  fill: #FFFFFF;
+}
+
+.sublimelinter.mark.error {
+  fill: #FF3333;
+}

@@ -13,8 +13,6 @@ Cargo.lock
 
 *.svg
 *.html
-*.sublime-color-scheme
-*.css
 *.json
 *.png
 sample.*

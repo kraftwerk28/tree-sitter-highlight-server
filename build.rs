@@ -12,6 +12,7 @@ fn build_language_parser(grammar_path: PathBuf) -> io::Result<()> {
     builder
         .include(src_dir)
         .flag("-Wno-unused")
+        .flag("-Wno-ignored-qualifiers")
         .file(parser_file.canonicalize()?);
 
     if scanner_file.exists() {

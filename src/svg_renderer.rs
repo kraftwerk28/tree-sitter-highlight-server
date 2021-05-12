@@ -1,26 +1,48 @@
 use htmlescape::encode_minimal;
 use tree_sitter_highlight::{Error, Highlight, HighlightEvent};
 
-pub struct SvgRenderer<AttrFn> {
+pub struct SvgRenderer<'a, AttrFn> {
     hl_stack: Vec<Highlight>,
     svg: String,
-    source: String,
+    source: &'a str,
     current_line: u32,
     attr_callback: AttrFn,
+    max_line_width: usize,
+    line_count: usize,
+    font_size: usize,
+    picture_width: usize,
+    number_column_width: usize,
+    font_aspect_ratio: f32,
 }
 
-impl<AttrFn> SvgRenderer<AttrFn>
+impl<'a, AttrFn> SvgRenderer<'a, AttrFn>
 where
     AttrFn: Fn(&Highlight) -> String,
 {
-    pub fn new(source: String, attr_callback: AttrFn) -> Self {
-        Self {
+    pub fn new(source: &'a str, attr_callback: AttrFn) -> Self {
+        let mut result = Self {
             svg: String::with_capacity(10 * 1024),
             source,
-            hl_stack: vec![],
+            hl_stack: Vec::new(),
             current_line: 0,
             attr_callback,
-        }
+            max_line_width: 0,
+            line_count: 0,
+            font_size: 20,
+            picture_width: 512 << 1,
+            number_column_width: 4,
+            font_aspect_ratio: 3. / 5.,
+        };
+        result.calculate_max_line_width();
+        result
+    }
+
+    fn calculate_max_line_width(&mut self) {
+        let lines = self.source.split('\n');
+        self.max_line_width =
+            lines.clone().map(|line| line.len()).max().unwrap()
+                + self.number_column_width;
+        self.line_count = lines.count();
     }
 
     /// Renger highlight events to svg string
@@ -99,6 +121,9 @@ where
     }
 
     fn prologue(&mut self, stylesheet: String) {
+        let font_size = (self.picture_width as f32
+            / self.max_line_width as f32
+            / self.font_aspect_ratio) as usize;
         let (width, height) = self.get_picture_size();
         self.svg += &format!(
             r#"
@@ -106,14 +131,14 @@ where
     <style>
         text {{
           font-family: monospace;
-          font-size: 20px;
+          font-size: {}px;
           fill: #FFFFFF;
         }}
         {}
     </style>
     <rect width="100%" height="100%" class="background" />
             "#,
-            width, height, stylesheet,
+            width, height, font_size, stylesheet,
         )
         .trim();
         self.svg.push('\n');
@@ -124,21 +149,21 @@ where
         self.svg += "</text></svg>";
     }
 
-    pub fn get_svg(&self) -> String {
-        self.svg.clone()
+    pub fn get_svg(&self) -> &str {
+        &self.svg
     }
 
     pub fn get_picture_size(&self) -> (usize, usize) {
-        let lines = self.source.split("\n");
-        // Considering line numbers
-        let numbers_column_width = 4;
-        let max_line_width =
-            lines.clone().map(|line| line.len()).max().unwrap()
-                + numbers_column_width;
-        let font_size = 20;
         (
-            font_size / 5 * 3 * max_line_width,
-            font_size * lines.count(),
+            self.picture_width,
+            (self.picture_width as f32 / self.get_aspect_ratio()) as usize + 10,
         )
+    }
+
+    pub fn get_aspect_ratio(&self) -> f32 {
+        let char_width = self.font_size as f32 * self.font_aspect_ratio;
+        let width = char_width * self.max_line_width as f32;
+        let height = self.font_size * self.line_count;
+        width as f32 / height as f32
     }
 }

@@ -1,0 +1,9 @@
+version: '3'
+services:
+  tree-sitter-highlight-server:
+    build: ./
+    image: kraftwerk28/tree-sitter-highlight-server
+    environment:
+      PORT: 3000
+    ports:
+      - 8080:3000
