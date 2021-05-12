@@ -6,23 +6,21 @@ mod utils;
 use crate::svg_renderer::SvgRenderer;
 use hyper::service::{make_service_fn, service_fn};
 use hyper::{body, http, Body, Method, Request, Response, Server};
-use std::{collections::HashMap, fs};
+use std::{collections::HashMap, env, fs};
 use tree_sitter_highlight::{Highlight, HighlightConfiguration, Highlighter};
 use utils::{get_language, USVG_TREE_OPTIONS};
 
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     env_logger::init();
-    log::info!("Starting server");
-    let addr = format!(
-        "127.0.0.1:{}",
-        std::env::var("PORT").unwrap_or(String::from("8080"))
-    )
-    .parse()
-    .expect("Invalid port value");
+    let port = env::var("PORT").unwrap_or(String::from("8080"));
+    let addr = format!("127.0.0.1:{}", port)
+        .parse()
+        .expect("Invalid port value");
     let make_srv =
         make_service_fn(|_| async { Ok::<_, http::Error>(service_fn(serve)) });
     let server = Server::bind(&addr).serve(make_srv);
+    log::info!("Server listening on :{}", port);
     if let Err(err) = server.await {
         log::error!("{:?}", err);
     }
